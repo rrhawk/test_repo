@@ -22,3 +22,16 @@ variable "vpc_name" {
   type    = string
   default = "skosolapov-vpc"
 }
+variable "routing_mode" {
+  default = "GLOBAL"
+}
+
+
+
+/*variable "var_public_subnet_name" {
+  default = google_compute_subnetwork.public_subnet.name
+}
+variable "var_private_subnet_name" {
+  default = google_compute_subnetwork.private_subnet.name
+}
+*/

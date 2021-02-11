@@ -1,12 +1,4 @@
-variable "network_self_link" {
-  type        = string
-  description = "network_self_link"
-  default     = "skosolapov-vpc"
-}
 
-variable "var_env" {
-  default = "dev"
-}
 variable "zone" {
   type        = string
   description = "zone"
@@ -16,14 +8,6 @@ variable "image" {
   type        = string
   description = "image"
   default     = "centos-7"
-}
-variable "var_private_subnet" {
-  type        = string
-  description = "private_subnet"
-}
-variable "var_public_subnet" {
-  type        = string
-  description = "public_subnet"
 }
 variable "region" {
   type        = string
@@ -39,4 +23,7 @@ variable "project" {
   type        = string
   description = "project"
   default     = "my-12345-project"
+}
+variable "var_public_subnet_name" {
+  default = "public"
 }
