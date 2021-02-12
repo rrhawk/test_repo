@@ -4,7 +4,7 @@ resource "google_compute_global_address" "default" {
 }
 
 ############
-resource "google_compute_global_forwarding_rule" "paas-monitor" {
+resource "google_compute_global_forwarding_rule" "web" {
   name       = "global-appserver-ip80"
   ip_address = google_compute_global_address.default.address
   port_range = "80"
@@ -23,10 +23,6 @@ resource "google_compute_url_map" "default" {
   name            = "url-map"
   default_service = google_compute_backend_service.staging_service.self_link
 
-  /*host_rule {
-    hosts        = ["mysite.com"]
-    path_matcher = "allpaths"
-  }
 
   path_matcher {
     name            = "allpaths"
@@ -37,7 +33,7 @@ resource "google_compute_url_map" "default" {
       service = google_compute_backend_service.staging_service.id
     }
   }
-  */
+
 }
 ##34.102.147.204
 resource "google_compute_instance_group" "staging_group" {

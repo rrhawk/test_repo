@@ -3,6 +3,12 @@ provider "google" {
   project     = var.project
   region      = var.region
 }
+terraform {
+  backend "gcs" {
+    bucket = "skosolapov-bucket"
+    prefix = "terraform/state"
+  }
+}
 
 module "vpc" {
   source = "./modules/global"
