@@ -27,7 +27,6 @@ variable "routing_mode" {
 }
 
 
-
 /*variable "var_public_subnet_name" {
   default = google_compute_subnetwork.public_subnet.name
 }

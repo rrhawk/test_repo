@@ -21,11 +21,24 @@ module "vpc" {
   region             = var.region
   routing_mode       = var.routing_mode
 }
-module "frontend" {
+module "instance" {
   depends_on = [
     module.vpc,
   ]
-  source = "./modules/frontend"
+  source = "./modules/instance"
+  name   = "frontend"
+  #######var_private_subnet_name = "var.var_private_subnet_name"
+}
+
+
+module "frontend" {
+  depends_on = [
+    module.vpc,
+    module.instance,
+  ]
+  value_frontend = module.instance.instance_id
+  source         = "./modules/frontend"
+
   ########var_public_subnet_name = "var.var_public_subnet_name"
   #network_self_link = module.vpc.vpc.name
   #subnetwork1        = module.frontend.out_public_subnet_name
@@ -37,7 +50,17 @@ module "frontend" {
 module "backend" {
   depends_on = [
     module.vpc,
+
   ]
   source = "./modules/backend"
+  #######var_private_subnet_name = "var.var_private_subnet_name"
+}
+module "bastion" {
+  depends_on = [
+    module.vpc,
+  ]
+  name   = "bastion"
+  source = "./modules/bastion"
+
   #######var_private_subnet_name = "var.var_private_subnet_name"
 }

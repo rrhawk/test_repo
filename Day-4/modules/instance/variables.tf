@@ -1,4 +1,7 @@
-
+variable "name" {
+  type    = string
+  default = "vm"
+}
 variable "zone" {
   type        = string
   description = "zone"
@@ -26,7 +29,4 @@ variable "project" {
 }
 variable "var_public_subnet_name" {
   default = "public"
-}
-variable "value_frontend" {
-
 }

@@ -7,8 +7,7 @@ resource "google_compute_forwarding_rule" "default" {
   project               = var.project
   backend_service       = google_compute_region_backend_service.default.self_link
   ip_address            = "10.13.2.100"
-  #  ip_protocol           = TCP
-  ports = ["8080"]
+  ports                 = ["8080"]
 }
 
 resource "google_compute_region_backend_service" "default" {
@@ -19,8 +18,7 @@ resource "google_compute_region_backend_service" "default" {
   timeout_sec = 10
   backend {
     group = google_compute_region_instance_group_manager.tomcat-manager.instance_group
-    #balancing_mode = "UTILIZATION"
-    #  capacity_scaler = 1.0
+
   }
   health_checks = [google_compute_health_check.tcp.id]
 }
@@ -95,10 +93,7 @@ resource "google_compute_instance_template" "instance_tomcat" {
     subnetwork = var.var_private_subnet_name
   }
   metadata_startup_script = file("./modules/backend/startup.sh")
-  provisioner "file" {
-    source      = "./cluster.war"
-    destination = "/usr/local/tomcat/webapps/cluster.war"
-  }
+
   lifecycle {
     create_before_destroy = true
   }

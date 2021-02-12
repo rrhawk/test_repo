@@ -23,24 +23,13 @@ resource "google_compute_url_map" "default" {
   name            = "url-map"
   default_service = google_compute_backend_service.staging_service.self_link
 
-
-  path_matcher {
-    name            = "allpaths"
-    default_service = google_compute_backend_service.staging_service.id
-
-    path_rule {
-      paths   = ["/*"]
-      service = google_compute_backend_service.staging_service.id
-    }
-  }
-
 }
 ##34.102.147.204
 resource "google_compute_instance_group" "staging_group" {
   name = "staging-instance-group"
   zone = "us-central1-c"
   instances = [
-    google_compute_instance.default.id,
+    var.value_frontend,
   ]
   named_port {
     name = "http"
@@ -73,28 +62,3 @@ resource "google_compute_http_health_check" "staging_health" {
 }
 
 #########
-
-resource "google_compute_instance" "default" {
-  name         = "frontend"
-  machine_type = var.machine_type
-  project      = var.project
-  #zone         =   "${element(var.var_zones, count.index)}"
-  zone = var.zone
-  tags = ["ssh", "http"]
-
-  boot_disk {
-    initialize_params {
-      image = "centos-7-v20180129"
-    }
-  }
-
-  /*  labels {
-    webserver = "true"
-  }*/
-  metadata_startup_script = file("startup.sh")
-  network_interface {
-    subnetwork = var.var_public_subnet_name
-
-
-  }
-}
