@@ -86,3 +86,10 @@ module "bastion" {
   var_script   = var.script_ssh
 
 }
+
+output "URL" {
+  value = "http://${module.http_balancer.global_ip}/clusterjsp"
+}
+output "SSH" {
+  value = "Bastion = ssh aliaksandr_mazurenka@${module.bastion.nat_ip}"
+}
