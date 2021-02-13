@@ -30,3 +30,6 @@ variable "project" {
 variable "var_public_subnet_name" {
   default = "public"
 }
+variable "var_script" {
+  default = "./startup_nginx.sh"
+}

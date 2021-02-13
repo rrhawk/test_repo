@@ -1,13 +1,6 @@
-/*variable "vms" {
-  description = "vms"
-  type        = map(string)
-  default = {
-    tomcat1 = "a"
-    tomcat2 = "b"
-    tomcat3 = "c"
-  }
+variable "var_script" {
+  default = "./startup_tomcat.sh"
 }
-*/
 variable "machine_type" {
   type        = string
   description = "machine_type"
@@ -32,4 +25,28 @@ variable "project" {
   type        = string
   description = "project"
   default     = "my-12345-project"
+}
+variable "load_balancing_scheme" {
+  default = "INTERNAL"
+}
+variable "name" {
+  default = "tomcat-forwarding-rule"
+}
+variable "balancer_ip" {
+  default = "10.13.2.100"
+}
+variable "balancer_port" {
+  default = "8080"
+}
+variable "number_of_instances" {
+  default = "3"
+}
+variable "var_prefix" {
+  default = "tomcat-"
+}
+variable "network" {
+  default = "skosolapov-vpc"
+}
+variable "name-instance-gm" {
+  default = "tomcat-manager"
 }

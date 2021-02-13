@@ -21,13 +21,13 @@ resource "google_compute_target_http_proxy" "default" {
 
 resource "google_compute_url_map" "default" {
   name            = "url-map"
-  default_service = google_compute_backend_service.staging_service.self_link
+  default_service = google_compute_backend_service.http_service.self_link
 
 }
 ##34.102.147.204
-resource "google_compute_instance_group" "staging_group" {
-  name = "staging-instance-group"
-  zone = "us-central1-c"
+resource "google_compute_instance_group" "http_group" {
+  name = var.instance-group-name
+  zone = var.zone
   instances = [
     var.value_frontend,
   ]
@@ -42,21 +42,21 @@ resource "google_compute_instance_group" "staging_group" {
   }
 }
 
-resource "google_compute_backend_service" "staging_service" {
-  name      = "staging-service"
+resource "google_compute_backend_service" "http_service" {
+  name      = var.backend-service-name
   port_name = "http"
   protocol  = "HTTP"
 
   backend {
-    group = google_compute_instance_group.staging_group.id
+    group = google_compute_instance_group.http_group.id
   }
 
   health_checks = [
-    google_compute_http_health_check.staging_health.id,
+    google_compute_http_health_check.http_health.id,
   ]
 }
 
-resource "google_compute_http_health_check" "staging_health" {
+resource "google_compute_http_health_check" "http_health" {
   name         = "staging-health"
   request_path = "/"
 }

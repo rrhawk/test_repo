@@ -1,36 +1,48 @@
 variable "private_subnet" {
-  type        = string
-  description = "private_subnet"
-  default     = "10.13.2.0/24"
 }
 variable "public_subnet" {
-  type        = string
-  description = "public_subnet"
-  default     = "10.13.1.0/24"
 }
 variable "region" {
-  type        = string
-  description = "Region"
-  default     = "us-central1"
 }
 variable "project" {
-  type        = string
-  description = "project"
-  default     = "my-12345-project"
 }
 variable "vpc_name" {
-  type    = string
-  default = "skosolapov-vpc"
 }
 variable "routing_mode" {
-  default = "GLOBAL"
 }
-
-
-/*variable "var_public_subnet_name" {
-  default = google_compute_subnetwork.public_subnet.name
+variable "zone_b" {
 }
-variable "var_private_subnet_name" {
-  default = google_compute_subnetwork.private_subnet.name
+variable "zone_f" {
 }
-*/
+variable "name_b" {
+}
+variable "name_f" {
+}
+variable "script_f" {
+}
+variable "script_b" {
+}
+variable "script_ssh" {
+}
+variable "machine_type" {
+}
+variable "prefix" {
+}
+variable "number_of_instances" {
+}
+variable "load_balancing_scheme" {
+}
+variable "name_back_forward" {
+}
+variable "balancer_ip" {
+}
+variable "balancer_port" {
+}
+variable "image" {
+}
+variable "name-instance-gm" {
+}
+variable "instance-group-name" {
+}
+variable "backend-service-name" {
+}

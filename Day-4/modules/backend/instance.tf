@@ -1,19 +1,19 @@
 resource "google_compute_forwarding_rule" "default" {
-  name                  = "tomcat-forwarding-rule"
-  region                = "us-central1"
-  load_balancing_scheme = "INTERNAL"
-  network               = "skosolapov-vpc"
+  name                  = var.name
+  region                = var.region
+  load_balancing_scheme = var.load_balancing_scheme
+  network               = var.network
   subnetwork            = var.var_private_subnet_name
   project               = var.project
   backend_service       = google_compute_region_backend_service.default.self_link
-  ip_address            = "10.13.2.100"
-  ports                 = ["8080"]
+  ip_address            = var.balancer_ip
+  ports                 = [var.balancer_port]
 }
 
 resource "google_compute_region_backend_service" "default" {
   project     = var.project
   name        = "tomcat-backend"
-  region      = "us-central1"
+  region      = var.region
   protocol    = "TCP"
   timeout_sec = 10
   backend {
@@ -30,7 +30,7 @@ resource "google_compute_health_check" "tcp" {
   check_interval_sec = 20
   timeout_sec        = 15
   tcp_health_check {
-    port = "8080"
+    port = var.balancer_port
   }
 }
 
@@ -41,24 +41,24 @@ resource "google_compute_health_check" "http" {
   check_interval_sec = 20
   timeout_sec        = 15
   http_health_check {
-    port = "8080"
+    port = var.balancer_port
   }
 }
 
 resource "google_compute_region_instance_group_manager" "tomcat-manager" {
-  name = "tomcat-manager"
+  name = var.name-instance-gm
 
   base_instance_name        = "instance-tomcat"
-  region                    = "us-central1"
+  region                    = var.region
   distribution_policy_zones = ["us-central1-a", "us-central1-b", "us-central1-c"]
   version {
     instance_template = google_compute_instance_template.instance_tomcat.id
   }
-  target_size = 3
+  target_size = var.number_of_instances
 
   named_port {
     name = "custom"
-    port = 8080
+    port = var.balancer_port
   }
 }
 
@@ -67,7 +67,7 @@ resource "google_compute_region_health_check" "tomcat-healthcheck" {
   timeout_sec        = 1
   check_interval_sec = 1
   http_health_check {
-    port = 8080
+    port = var.balancer_port
   }
 }
 
@@ -76,15 +76,15 @@ resource "google_compute_region_health_check" "tomcat-healthcheck" {
 
 
 resource "google_compute_instance_template" "instance_tomcat" {
-  name_prefix  = "tomcat-"
+  name_prefix  = var.var_prefix
   project      = var.project
   machine_type = var.machine_type
-  region       = "us-central1"
+  region       = var.region
 
   // boot disk
   disk {
 
-    source_image = "centos-cloud/centos-7"
+    source_image = var.image
 
   }
 
@@ -92,7 +92,7 @@ resource "google_compute_instance_template" "instance_tomcat" {
   network_interface {
     subnetwork = var.var_private_subnet_name
   }
-  metadata_startup_script = file("./modules/backend/startup.sh")
+  metadata_startup_script = file(var.var_script)
 
   lifecycle {
     create_before_destroy = true
