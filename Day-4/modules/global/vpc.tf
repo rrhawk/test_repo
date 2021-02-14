@@ -63,6 +63,19 @@ resource "google_compute_firewall" "allow-bastion" {
   target_tags = ["ssh"]
 }
 
+resource "google_compute_firewall" "firewall_internal_healthcheck" {
+  name          = "fw-internal-hc"
+  network       = google_compute_network.vpc.name
+  source_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+  target_tags   = ["lb"]
+  direction     = "INGRESS"
+  allow {
+    protocol = "tcp"
+    ports    = ["8080"]
+  }
+}
+
+
 resource "google_compute_router" "router" {
   name    = "my-router"
   region  = google_compute_subnetwork.private.region

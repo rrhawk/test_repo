@@ -55,21 +55,25 @@ resource "google_compute_region_instance_group_manager" "tomcat-manager" {
     instance_template = google_compute_instance_template.instance_tomcat.id
   }
   target_size = var.number_of_instances
-
+  auto_healing_policies {
+    health_check      = google_compute_health_check.tcp.id
+    initial_delay_sec = 300
+  }
   named_port {
     name = "custom"
     port = var.balancer_port
   }
 }
-
+/*
 resource "google_compute_region_health_check" "tomcat-healthcheck" {
   name               = "tomcat-healthcheck"
-  timeout_sec        = 1
-  check_interval_sec = 1
+  timeout_sec        = 5
+  check_interval_sec = 5
   http_health_check {
     port = var.balancer_port
   }
 }
+*/
 
 
 ############iam_instance
@@ -80,7 +84,7 @@ resource "google_compute_instance_template" "instance_tomcat" {
   project      = var.project
   machine_type = var.machine_type
   region       = var.region
-
+  tags         = ["lb"]
   // boot disk
   disk {
 

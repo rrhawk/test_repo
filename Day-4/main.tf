@@ -86,6 +86,22 @@ module "bastion" {
   var_script   = var.script_ssh
 
 }
+/*
+module "vpn" {
+  depends_on = [
+    module.vpc,
+  ]
+  source     = "./modules/vpn"
+  project    = var.project
+  region     = var.region
+  network_id = module.vpc.vpc_id
+  network    = module.vpc.vpc_name
+
+}
+*/
+
+
+
 
 output "URL" {
   value = "http://${module.http_balancer.global_ip}/clusterjsp"
@@ -93,3 +109,11 @@ output "URL" {
 output "SSH" {
   value = "Bastion = ssh aliaksandr_mazurenka@${module.bastion.nat_ip}"
 }
+/*
+output "VPNKey" {
+  value = module.vpn.secret
+}
+output "VPNIP" {
+  value = module.vpn.vpn_ip
+}
+*/

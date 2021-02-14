@@ -1,9 +1,11 @@
 resource "google_compute_vpn_tunnel" "tunnel1" {
-  name          = "tunnel1"
-  peer_ip       = "15.0.0.120"
-  shared_secret = "a secret message"
-
-  target_vpn_gateway = google_compute_vpn_gateway.target_gateway.id
+  name                   = "tunnel1"
+  peer_ip                = "15.0.0.120"
+  shared_secret          = "a secret message"
+  project                = var.project
+  region                 = var.region
+  local_traffic_selector = ["0.0.0.0/0"]
+  target_vpn_gateway     = google_compute_vpn_gateway.target_gateway.id
 
   depends_on = [
     google_compute_forwarding_rule.fr_esp,
@@ -14,12 +16,9 @@ resource "google_compute_vpn_tunnel" "tunnel1" {
 
 resource "google_compute_vpn_gateway" "target_gateway" {
   name    = "vpn1"
-  network = google_compute_network.network1.id
+  network = var.network_id
 }
 
-resource "google_compute_network" "network1" {
-  name = "network1"
-}
 
 resource "google_compute_address" "vpn_static_ip" {
   name = "vpn-static-ip"
@@ -50,7 +49,7 @@ resource "google_compute_forwarding_rule" "fr_udp4500" {
 
 resource "google_compute_route" "route1" {
   name       = "route1"
-  network    = google_compute_network.network1.name
+  network    = var.network
   dest_range = "15.0.0.0/24"
   priority   = 1000
 
