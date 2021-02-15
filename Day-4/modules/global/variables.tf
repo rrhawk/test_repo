@@ -31,10 +31,13 @@ variable "region" {
 variable "routing_mode" {
   default = "INTERNAL"
 }
-/*
-variable "network_self_link" {
+variable "var_public_subnet_name" {
   type        = string
-  description = "network_self_link"
-  default     = "skosolapov-vpc"
+  description = "public_subnet"
+  default     = "public"
 }
-*/
+variable "var_private_subnet_name" {
+  type        = string
+  description = "private_subnet"
+  default     = "private"
+}

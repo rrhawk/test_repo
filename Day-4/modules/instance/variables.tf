@@ -33,3 +33,9 @@ variable "var_public_subnet_name" {
 variable "var_script" {
   default = "./startup_nginx.sh"
 }
+variable "var_use_ext_ip" {
+  type    = bool
+  default = false
+}
+variable "var_tags" {
+}

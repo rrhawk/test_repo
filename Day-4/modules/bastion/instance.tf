@@ -4,7 +4,7 @@ resource "google_compute_instance" "default" {
   project      = var.project
   #zone         =   "${element(var.var_zones, count.index)}"
   zone = var.zone
-  tags = ["ssh"]
+  tags = var.var_tags
 
   boot_disk {
     initialize_params {

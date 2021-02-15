@@ -1,12 +1,12 @@
 resource "google_compute_subnetwork" "public" {
-  name          = "public"
+  name          = var.var_public_subnet_name
   ip_cidr_range = var.var_public_subnet
   network       = google_compute_network.vpc.name
   region        = var.region
   #  zone          = var.zone
 }
 resource "google_compute_subnetwork" "private" {
-  name          = "private"
+  name          = var.var_private_subnet_name
   ip_cidr_range = var.var_private_subnet
   network       = google_compute_network.vpc.name
   region        = var.region
@@ -61,6 +61,17 @@ resource "google_compute_firewall" "allow-bastion" {
   }
 
   target_tags = ["ssh"]
+}
+
+resource "google_compute_firewall" "allow-vpn" {
+  name    = "fw-allow-vpn"
+  network = google_compute_network.vpc.name
+  allow {
+    protocol = "tcp"
+    ports    = ["1194"]
+  }
+
+  target_tags = ["vpn"]
 }
 
 resource "google_compute_firewall" "firewall_internal_healthcheck" {

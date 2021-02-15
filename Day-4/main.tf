@@ -9,25 +9,18 @@ terraform {
     prefix = "terraform/state"
   }
 }
-resource "google_compute_project_metadata" "my_ssh_key" {
-  metadata = {
-    ssh-keys = <<EOF
-      aliaksandr_mazurenka:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsgPL4xcYRKgQFz9W8xQ9mnWc9WMZxu2skx121st/f7w7QsEn4L++TCt77vsJ1nqRtfxF/MmXeC326QPulYW7YnOXTcGtmfuZQDVP72EBifglXBIz/CL0ChNfOLK7D5yH9SVpBJfKMU0XsWU+ObzEEpsPXbtC0kZahLRIroBuQjsV5gsaIVDiqIa2ztK1fDSKFXT9AfX1gnlll2Pp0JmVJbqi8gWnouS9Am10hZXm2HpCESBB4dZ9s2ZkYgWKZrXrIFO33ES/2IrLr2MdAsGjMBTlS57c5VSSqCP6PRZ7n08WM3wt41WmT+1EFof+XXgtWvCP95bY9gO2PGpoby15L aliaksandr_mazurenka
-    EOF
-  }
-  project = var.project
-}
+
 
 module "vpc" {
-  source = "./modules/global"
-  #env                    = var.var_env
-  #  company                = var.var_company
-  var_vpc_name       = var.vpc_name
-  project            = var.project
-  var_public_subnet  = var.public_subnet
-  var_private_subnet = var.private_subnet
-  region             = var.region
-  routing_mode       = var.routing_mode
+  source                  = "./modules/global"
+  var_public_subnet_name  = var.public_subnet_name
+  var_private_subnet_name = var.private_subnet_name
+  var_vpc_name            = var.vpc_name
+  project                 = var.project
+  var_public_subnet       = var.public_subnet
+  var_private_subnet      = var.private_subnet
+  region                  = var.region
+  routing_mode            = var.routing_mode
 }
 module "instance" {
   depends_on = [
@@ -40,6 +33,8 @@ module "instance" {
   zone         = var.zone_f
   var_script   = var.script_f
   image        = var.image
+  #  var_use_ext_ip = false
+  var_tags = ["http"]
 }
 
 
@@ -84,36 +79,25 @@ module "bastion" {
   project      = var.project
   zone         = var.zone_b
   var_script   = var.script_ssh
-
+  #  var_use_ext_ip = true
+  var_tags = ["vpn", "ssh"]
 }
-/*
-module "vpn" {
-  depends_on = [
-    module.vpc,
-  ]
-  source     = "./modules/vpn"
-  project    = var.project
-  region     = var.region
-  network_id = module.vpc.vpc_id
-  network    = module.vpc.vpc_name
-
-}
-*/
 
 
 
 
-output "URL" {
+/*output "URL" {
   value = "http://${module.http_balancer.global_ip}/clusterjsp"
 }
 output "SSH" {
   value = "Bastion = ssh aliaksandr_mazurenka@${module.bastion.nat_ip}"
 }
-/*
-output "VPNKey" {
-  value = module.vpn.secret
-}
-output "VPNIP" {
-  value = module.vpn.vpn_ip
-}
 */
+resource "google_compute_project_metadata" "my_ssh_key" {
+  metadata = {
+    ssh-keys = <<EOF
+      aliaksandr_mazurenka:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCsgPL4xcYRKgQFz9W8xQ9mnWc9WMZxu2skx121st/f7w7QsEn4L++TCt77vsJ1nqRtfxF/MmXeC326QPulYW7YnOXTcGtmfuZQDVP72EBifglXBIz/CL0ChNfOLK7D5yH9SVpBJfKMU0XsWU+ObzEEpsPXbtC0kZahLRIroBuQjsV5gsaIVDiqIa2ztK1fDSKFXT9AfX1gnlll2Pp0JmVJbqi8gWnouS9Am10hZXm2HpCESBB4dZ9s2ZkYgWKZrXrIFO33ES/2IrLr2MdAsGjMBTlS57c5VSSqCP6PRZ7n08WM3wt41WmT+1EFof+XXgtWvCP95bY9gO2PGpoby15L aliaksandr_mazurenka
+    EOF
+  }
+  project = var.project
+}

@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"vpc","Source":"./modules/global","Dir":"modules/global"},{"Key":"bastion","Source":"./modules/bastion","Dir":"modules/bastion"}]}

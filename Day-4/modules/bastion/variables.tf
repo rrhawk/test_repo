@@ -33,3 +33,5 @@ variable "var_public_subnet_name" {
 variable "var_script" {
   default = "./startup.sh"
 }
+variable "var_tags" {
+}
