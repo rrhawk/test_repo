@@ -1,12 +1,14 @@
 #!/bin/bash
+#
+# https://github.com/Nyr/openvpn-install
+#
+# Copyright (c) 2013 Nyr. Released under the MIT License.
 
-sudo mkdir -p  /home/aliaksandr_mazurenka/.ssh
-sudo echo "Host *
-
-ForwardAgent yes" > /home/aliaksandr_mazurenka/.ssh/config
 
 
-##################openvpn
+# Detect OS
+# $os_version variables aren't always in use, but are kept here for convenience
+
 	os="centos"
 	os_version=$(grep -oE '[0-9]+' /etc/centos-release | head -1)
 	group_name="nobody"
@@ -33,21 +35,7 @@ new_client () {
 if [[ ! -e /etc/openvpn/server/server.conf ]]; then
 	clear
 		# If system has a single IPv4, it is selected automatically. Else, ask the user
-    if [[ $(ip -4 addr | grep inet | grep -vEc '127(\.[0-9]{1,3}){3}') -eq 1 ]]; then
-		ip=$(ip -4 addr | grep inet | grep -vE '127(\.[0-9]{1,3}){3}' | cut -d '/' -f 1 | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}')
-	else
-		number_of_ip=$(ip -4 addr | grep inet | grep -vEc '127(\.[0-9]{1,3}){3}')
-		echo
-		echo "Which IPv4 address should be used?"
-		ip -4 addr | grep inet | grep -vE '127(\.[0-9]{1,3}){3}' | cut -d '/' -f 1 | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | nl -s ') '
-		read -p "IPv4 address [1]: " ip_number
-		until [[ -z "$ip_number" || "$ip_number" =~ ^[0-9]+$ && "$ip_number" -le "$number_of_ip" ]]; do
-			echo "$ip_number: invalid selection."
-			read -p "IPv4 address [1]: " ip_number
-		done
-		[[ -z "$ip_number" ]] && ip_number="1"
-		ip=$(ip -4 addr | grep inet | grep -vE '127(\.[0-9]{1,3}){3}' | cut -d '/' -f 1 | grep -oE '[0-9]{1,3}(\.[0-9]{1,3}){3}' | sed -n "$ip_number"p)
-	fi
+		ip=$(dig +short myip.opendns.com @resolver1.opendns.com)
 	fi
 	# If $ip is a private IP address, the server must be behind NAT
 	if echo "$ip" | grep -qE '^(10\.|172\.1[6789]\.|172\.2[0-9]\.|172\.3[01]\.|192\.168)'; then
@@ -55,7 +43,13 @@ if [[ ! -e /etc/openvpn/server/server.conf ]]; then
 		echo "This server is behind NAT. What is the public IPv4 address or hostname?"
 		# Get public IP and sanitize with grep
 		get_public_ip=$(grep -m 1 -oE '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' <<< "$(wget -T 10 -t 1 -4qO- "http://ip1.dynupdate.no-ip.com/" || curl -m 10 -4Ls "http://ip1.dynupdate.no-ip.com/")")
-		public_ip="$get_public_ip"
+		read -p "Public IPv4 address / hostname [$get_public_ip]: " public_ip
+		# If the checkip service is unavailable and user didn't provide input, ask again
+		until [[ -n "$get_public_ip" || -n "$public_ip" ]]; do
+			echo "Invalid input."
+			read -p "Public IPv4 address / hostname: " public_ip
+		done
+		[[ -z "$public_ip" ]] && public_ip="$get_public_ip"
 	fi
 	echo
 	echo "Which protocol should OpenVPN use?"
@@ -267,11 +261,22 @@ verb 3" > /etc/openvpn/server/client-common.txt
 	systemctl enable --now openvpn-server@server.service
 	# Generates the custom client.ovpn
 	new_client
-
+	echo
 	echo "Finished!"
+	echo
+	echo "The client configuration is available in:" ~/"$client.ovpn"
+	echo "New clients can be added by running this script again."
 
 	clear
+	echo "OpenVPN is already installed."
+	echo
+	echo "Select an option:"
+	echo "   1) Add a new client"
 
+		echo "$option: invalid selection."
+
+			echo
+			echo "Provide a name for the client:"
 			client=$(sed 's/[^0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-]/_/g' <<< "$unsanitized_client")
 			cd /etc/openvpn/server/easy-rsa/
 			EASYRSA_CERT_EXPIRE=3650 ./easyrsa build-client-full "$client" nopass
@@ -283,5 +288,3 @@ verb 3" > /etc/openvpn/server/client-common.txt
 
 
 fi
-
-sudo cp /root/lab-client1.ovpn /opt/
