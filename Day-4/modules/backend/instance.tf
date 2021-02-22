@@ -64,19 +64,6 @@ resource "google_compute_region_instance_group_manager" "tomcat-manager" {
     port = var.balancer_port
   }
 }
-/*
-resource "google_compute_region_health_check" "tomcat-healthcheck" {
-  name               = "tomcat-healthcheck"
-  timeout_sec        = 5
-  check_interval_sec = 5
-  http_health_check {
-    port = var.balancer_port
-  }
-}
-*/
-
-
-############iam_instance
 
 
 resource "google_compute_instance_template" "instance_tomcat" {
