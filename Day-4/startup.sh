@@ -283,3 +283,5 @@ verb 3" > /etc/openvpn/server/client-common.txt
 
 
 fi
+
+sudo cp /root/lab-client1.ovpn /opt/
